@@ -1,0 +1,32 @@
+{
+  "baseURL": "https://jancieslak.github.io/projects.github.io/",
+  "languageCode": "en-us",
+  "title": "Projects",
+  "theme": "clean-docs",
+  "canonifyURLs": true,
+  "markup": {
+    "tableOfContents": {
+      "startLevel": 1,
+      "endLevel": 6
+    }
+  },
+  "menu": {
+    "main": [
+      {
+        "name": "Home",
+        "pageRef": "/",
+        "weight": 10
+      },
+      {
+        "name": "HTML",
+        "pageRef": "/HTML",
+        "weight": 20
+      },
+      {
+        "name": "CSS",
+        "pageRef": "/CSS",
+        "weight": 30
+      }
+    ]
+  }
+}

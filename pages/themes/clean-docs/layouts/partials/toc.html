@@ -1,0 +1,8 @@
+{{ if .Params.toc }}
+<aside class="vh-100 od-flex flex-column p-3 verflow-auto custom-scrollbar border-3"
+       style="width: 400px">
+    <span class="fs-4">Table of contents</span>
+    <hr>
+    {{ .TableOfContents }}
+</aside>
+{{ end }}

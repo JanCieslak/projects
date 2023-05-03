@@ -1,0 +1,27 @@
+{{ $dateTime := .PublishDate.Format "2006-01-02" }}
+{{ $dateFormat := .Site.Params.dateFormat | default "Jan 2, 2006" }}
+{{ $image := resources.Get "js-image.jpeg" }}
+
+<div class="pt-4">
+    <a href="{{ .RelPermalink }}" class="card p-3 clickable text-decoration-none text-muted" style="width: 500px">
+        <div class="d-flex justify-content-between">
+            <h5 class="card-title">{{ .Title }}</h5>
+            {{ if eq .Kind "section" }}
+                <i data-feather="folder"></i>
+            {{ end }}
+            {{ if eq .Kind "page" }}
+                <i data-feather="book"></i>
+            {{ end }}
+        </div>
+        {{/*        {{ with .Params.tags }}*/}}
+        {{/*            {{ if . }}*/}}
+        {{/*                <div class="d-inline">*/}}
+        {{/*                    {{ range . }}*/}}
+        {{/*                        {{ $href := print (absURL "tags/") (urlize .) }}*/}}
+        {{/*                        <a class="btn btn-light" href="{{ $href }}">{{ . }}</a>*/}}
+        {{/*                    {{ end }}*/}}
+        {{/*                </div>*/}}
+        {{/*            {{ end }}*/}}
+        {{/*        {{ end }}*/}}
+    </a>
+</div>
