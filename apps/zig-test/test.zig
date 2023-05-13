@@ -7,9 +7,9 @@ const Ref = packed struct {
 };
 
 pub fn main() void {
-    // const ref = Ref{ .a = 0, .b = 1 };
-    // const ref2 = Ref{ .a = 1, .b = 0 };
-    // std.debug.print("Ref: {}\n", .{@bitCast(u16, ref)});
-    // std.debug.print("Ref2: {}\n", .{@bitCast(u16, ref2)});
-
+    const ref = Ref{ .a = 0, .b = 1 };
+    _ = ref;
+    const ref2 = Ref{ .a = 1, .b = 0 };
+    std.debug.print("Ref: {}\n", .{@sizeOf(*u32)});
+    std.debug.print("Ref2: {}\n", .{@bitCast(u16, ref2)});
 }
