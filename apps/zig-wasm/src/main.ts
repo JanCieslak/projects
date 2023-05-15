@@ -85,12 +85,12 @@ class ZigWasm {
                 call: (thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
                     const target = this.values[thisId]
                     const fn = Reflect.get(target, this.getString(fnNamePtr, fnNameLen))
-                    const memBlock = this.getMemoryBlock(argsPtr, argsLen * 2)
+                    const view = this.getMemoryView()
                     const args = []
                     for (let i = 0; i < argsLen; ++i) {
                         const ptr = argsPtr + i * 8
                         const ref = this.getRefOrNumber(ptr)
-                        isNumber(ref) ? args.push(ref) : args.push(this.values[memBlock[i]])
+                        isNumber(ref) ? args.push(ref) : args.push(this.values[view.getUint32(ptr, true)])
                     }
                     Reflect.apply(fn, target, args)
                 },
