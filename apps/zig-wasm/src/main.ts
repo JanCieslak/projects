@@ -3,21 +3,15 @@ const textEncoder = new TextEncoder()
 
 const qnan = 0x7ff8_0000
 
-interface Ref {
-    head: number
-    kind: number
-    id: number
-}
+type Value = { head: number; kind: number; id: number } | number
 
-type RefOrNumber = Ref | number
-
-const isNumber = (refOrNumber: RefOrNumber): refOrNumber is number => typeof refOrNumber === 'number'
+const isNumber = (value: Value): value is number => typeof value === 'number'
 
 class ZigWasm {
     memory?: WebAssembly.Memory
     run?: () => void
     values: Array<any> = [NaN, undefined, null, true, false, globalThis]
-    refKinds = new Map<string, number>([
+    ValueTypes = new Map<string, number>([
         ['string', 0],
         ['boolean', 1],
         ['symbol', 2],
@@ -27,7 +21,6 @@ class ZigWasm {
     ])
 
     init = (object: WebAssembly.WebAssemblyInstantiatedSource) => {
-        console.log(object.instance)
         const { memory, run } = object.instance.exports
         this.memory = memory as WebAssembly.Memory
         this.run = run as () => void
@@ -37,10 +30,10 @@ class ZigWasm {
     getMemoryView = (): DataView => new DataView(this.memory!.buffer)
     getMemoryBlock = (offset: number, len: number) => new Uint32Array(this.getMemoryBuffer(), offset, len)
 
-    getKindId = (object: any): number => this.refKinds.get(typeof object)!
+    getKindId = (object: any): number => this.ValueTypes.get(typeof object)!
 
     getString = (ptr: number, len: number): string => textDecoder.decode(new Uint8Array(this.getMemoryBuffer(), ptr, len))
-    getRefOrNumber = (ptr: number): RefOrNumber => {
+    getValue = (ptr: number): Value => {
         const view = this.getMemoryView()
 
         const num = view.getFloat64(ptr, true)
@@ -51,7 +44,7 @@ class ZigWasm {
         const id = view.getUint32(ptr, true)
         return this.values[id]
     }
-    createRefIfNeeded = (object: any): RefOrNumber => {
+    createValueIfNeeded = (object: any): Value => {
         if (typeof object === 'number' && !Number.isNaN(object)) {
             return object
         }
@@ -60,13 +53,13 @@ class ZigWasm {
         const id = this.values.push(object) - 1
         return { head, kind, id }
     }
-    returnRefOrNumber = (out: number, ref: RefOrNumber) => {
+    returnValue = (out: number, value: Value) => {
         const view = this.getMemoryView()
-        if (isNumber(ref)) {
-            view.setFloat64(out, ref, true)
+        if (isNumber(value)) {
+            view.setFloat64(out, value, true)
         } else {
-            view.setUint32(out + 4, ref.head | ref.kind, true)
-            view.setUint32(out, ref.id, true)
+            view.setUint32(out + 4, value.head | value.kind, true)
+            view.setUint32(out, value.id, true)
         }
     }
 
@@ -76,11 +69,11 @@ class ZigWasm {
                 // TODO: Replace console log with get + call
                 consoleLog: (ptr: number, len: number) => console.log(this.getString(ptr, len)),
                 get: (out: number, id: number, memberName: number, memberNameLen: number) => {
-                    const value = this.values[id]
+                    const valueRef = this.values[id]
                     const member = this.getString(memberName, memberNameLen)
-                    const result = Reflect.get(value, member)
-                    const refOrNumber = this.createRefIfNeeded(result)
-                    this.returnRefOrNumber(out, refOrNumber)
+                    const result = Reflect.get(valueRef, member)
+                    const value = this.createValueIfNeeded(result)
+                    this.returnValue(out, value)
                 },
                 call: (thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
                     const target = this.values[thisId]
@@ -89,14 +82,14 @@ class ZigWasm {
                     const args = []
                     for (let i = 0; i < argsLen; ++i) {
                         const ptr = argsPtr + i * 8
-                        const ref = this.getRefOrNumber(ptr)
-                        isNumber(ref) ? args.push(ref) : args.push(this.values[view.getUint32(ptr, true)])
+                        const value = this.getValue(ptr)
+                        isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
                     Reflect.apply(fn, target, args)
                 },
-                createStringRef: (out: number, ptr: number, len: number) => {
-                    const ref = this.createRefIfNeeded(this.getString(ptr, len))
-                    this.returnRefOrNumber(out, ref)
+                createStringValue: (out: number, ptr: number, len: number) => {
+                    const value = this.createValueIfNeeded(this.getString(ptr, len))
+                    this.returnValue(out, value)
                 },
             },
         }

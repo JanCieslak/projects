@@ -1,6 +1,8 @@
 const std = @import("std");
 const allocator = std.heap.page_allocator;
-const consoleLog = @import("./externs.zig").consoleLog;
+const Value = @import("./value.zig").Value;
+const values = @import("./values.zig");
+const externs = @import("./externs.zig");
 
 const Error = error{};
 const Context = struct { buffer: *std.ArrayList(u8) };
@@ -16,5 +18,7 @@ fn write(context: Context, bytes: []const u8) Error!usize {
 pub fn log(comptime format: []const u8, args: anytype) void {
     buffer.clearAndFree();
     writer.print(format, args) catch unreachable;
-    consoleLog(buffer.items.ptr, buffer.items.len);
+
+    const console = values.global.get("console");
+    console.call("log", .{Value.fromString(buffer.items)});
 }

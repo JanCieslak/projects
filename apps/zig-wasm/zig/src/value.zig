@@ -1,26 +1,40 @@
-const assert = @import("std").debug.assert;
-const ref = @import("./ref.zig");
-const Ref = ref.Ref;
+const std = @import("std");
+const assert = std.debug.assert;
 const externs = @import("./externs.zig");
 
-// TODO: Merge Ref and Value ? (Is the a purpose of creating Value abstraction over Ref, I don't think so)
-pub const Value = struct {
-    ref: Ref,
+pub const Kind = enum(u3) {
+    string,
+    boolean,
+    symbol,
+    undefined,
+    object,
+    function,
+};
+
+/// Memory layout u64 [ head(u29), kind(u3), id(u32) ]
+pub const Value = packed struct {
+    id: u32,
+    kind: Kind,
+    head: u29 = std.math.qnan_u64 >> 35,
+
+    pub fn isNumber(self: Value) bool {
+        return !std.math.isNan(@bitCast(f64, self));
+    }
 
     pub fn get(self: Value, member: []const u8) Value {
-        var out: Ref = undefined;
-        externs.get(&out, self.ref.id, member.ptr, member.len);
-        return .{ .ref = out };
+        var out: Value = undefined;
+        externs.get(&out, self.id, member.ptr, member.len);
+        return out;
     }
 
     pub fn call(self: Value, fnName: []const u8, args: anytype) void {
         const info = @typeInfo(@TypeOf(args)).Struct;
         assert(info.is_tuple);
-        var argsArray: [info.fields.len]Ref = undefined;
+        var argsArray: [info.fields.len]Value = undefined;
         inline for (info.fields, 0..) |field, i| {
             argsArray[i] = switch (@typeInfo(field.type)) {
                 .Struct => switch (field.type) {
-                    Value => @field(args, field.name).ref,
+                    Value => @field(args, field.name),
                     else => @panic("not supported yet"),
                 },
                 // Support normal strings and wrap them here with values.fromString
@@ -29,12 +43,19 @@ pub const Value = struct {
                 // },
                 .Int,
                 .ComptimeInt,
-                => @bitCast(Ref, @bitCast(u64, @as(f64, @field(args, field.name)))),
-                .Float, .ComptimeFloat => @bitCast(Ref, @bitCast(u64, @as(f64, @field(args, field.name)))),
+                => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
+                .Float, .ComptimeFloat => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
                 else => @panic("not supported yet"),
             };
         }
         // TODO: Support return values
-        externs.call(self.ref.id, fnName.ptr, fnName.len, @ptrCast([*]Ref, &argsArray), argsArray.len);
+        externs.call(self.id, fnName.ptr, fnName.len, @ptrCast([*]Value, &argsArray), argsArray.len);
+    }
+
+    // TODO: Support non const strings
+    pub fn fromString(stringValue: []const u8) Value {
+        var out: Value = undefined;
+        externs.createStringRef(&out, stringValue.ptr, stringValue.len);
+        return out;
     }
 };

@@ -1,8 +1,6 @@
 const std = @import("std");
-const allocator = std.heap.page_allocator;
-const values = @import("./values.zig");
+const console = @import("./console.zig");
 
 pub export fn run() void {
-    const console = values.global.get("console");
-    console.call("log", .{ values.fromString("Hello"), 123, 321.0, values.fromString("world") });
+    console.log("Hello {s} - {} ", .{ "World", 123 });
 }
