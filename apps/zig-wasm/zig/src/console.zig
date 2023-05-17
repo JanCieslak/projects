@@ -1,8 +1,7 @@
 const std = @import("std");
 const allocator = std.heap.page_allocator;
-const Value = @import("./value.zig").Value;
+const Value = @import("./core/value.zig").Value;
 const values = @import("./values.zig");
-const externs = @import("./externs.zig");
 
 const Error = error{};
 const Context = struct { buffer: *std.ArrayList(u8) };

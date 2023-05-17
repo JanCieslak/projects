@@ -66,7 +66,6 @@ class ZigWasm {
     importObject = (): WebAssembly.Imports => {
         return {
             env: {
-                // TODO: Replace console log with get + call
                 consoleLog: (ptr: number, len: number) => console.log(this.getString(ptr, len)),
                 get: (out: number, id: number, memberName: number, memberNameLen: number) => {
                     const valueRef = this.values[id]

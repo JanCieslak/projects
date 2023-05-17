@@ -17,6 +17,13 @@ pub const Value = packed struct {
     kind: Kind,
     head: u29 = std.math.qnan_u64 >> 35,
 
+    // TODO: Support non const strings
+    pub fn fromString(stringValue: []const u8) Value {
+        var out: Value = undefined;
+        externs.createStringRef(&out, stringValue.ptr, stringValue.len);
+        return out;
+    }
+
     pub fn isNumber(self: Value) bool {
         return !std.math.isNan(@bitCast(f64, self));
     }
@@ -50,12 +57,5 @@ pub const Value = packed struct {
         }
         // TODO: Support return values
         externs.call(self.id, fnName.ptr, fnName.len, @ptrCast([*]Value, &argsArray), argsArray.len);
-    }
-
-    // TODO: Support non const strings
-    pub fn fromString(stringValue: []const u8) Value {
-        var out: Value = undefined;
-        externs.createStringRef(&out, stringValue.ptr, stringValue.len);
-        return out;
     }
 };
