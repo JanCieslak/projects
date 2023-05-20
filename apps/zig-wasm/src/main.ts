@@ -9,7 +9,8 @@ const isNumber = (value: Value): value is number => typeof value === 'number'
 
 class ZigWasm {
     memory?: WebAssembly.Memory
-    run?: () => void
+    start?: () => void
+    update?: (timestamp: number) => void
     values: Array<any> = [NaN, undefined, null, true, false, globalThis, document]
     ValueTypes = new Map<string, number>([
         ['string', 0],
@@ -21,9 +22,10 @@ class ZigWasm {
     ])
 
     init = (object: WebAssembly.WebAssemblyInstantiatedSource) => {
-        const { memory, run } = object.instance.exports
+        const { memory, start, update } = object.instance.exports
         this.memory = memory as WebAssembly.Memory
-        this.run = run as () => void
+        this.start = start as () => void
+        this.update = update as (timestamp: number) => void
     }
 
     getMemoryBuffer = (): ArrayBuffer => this.memory!.buffer
@@ -106,10 +108,22 @@ class ZigWasm {
 
 const zigWasm = new ZigWasm()
 
+let oldTimestamp = 0;
+
+function updateWrapper(timestamp: number) {
+    if (zigWasm.update) {
+        zigWasm.update((timestamp - oldTimestamp) / 1000)
+    }
+    oldTimestamp = timestamp;
+
+    requestAnimationFrame(updateWrapper)
+}
+
 WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
     .then((obj) => zigWasm.init(obj))
     .then(() => {
-        if (zigWasm.run) {
-            zigWasm.run()
+        if (zigWasm.start && zigWasm.update) {
+            zigWasm.start()
+            requestAnimationFrame(updateWrapper)
         }
     })
