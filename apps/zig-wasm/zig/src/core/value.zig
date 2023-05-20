@@ -17,6 +17,8 @@ pub const Value = packed struct {
     kind: Kind,
     head: u29 = std.math.qnan_u64 >> 35,
 
+    const Self = @This();
+
     // TODO: Support non const strings
     pub fn fromString(stringValue: []const u8) Value {
         var out: Value = undefined;
@@ -24,17 +26,21 @@ pub const Value = packed struct {
         return out;
     }
 
-    pub fn isNumber(self: Value) bool {
+    pub fn isNumber(self: Self) bool {
         return !std.math.isNan(@bitCast(f64, self));
     }
 
-    pub fn get(self: Value, member: []const u8) Value {
+    pub fn get(self: Self, member: []const u8) Value {
         var out: Value = undefined;
         externs.get(&out, self.id, member.ptr, member.len);
         return out;
     }
 
-    pub fn call(self: Value, fnName: []const u8, args: anytype) Value {
+    pub fn set(self: Self, member: []const u8, value: Value) void {
+        externs.set(self.id, member.ptr, member.len, &value);
+    }
+
+    pub fn call(self: Self, fnName: []const u8, args: anytype) Value {
         const info = @typeInfo(@TypeOf(args)).Struct;
         assert(info.is_tuple);
         var argsArray: [info.fields.len]Value = undefined;

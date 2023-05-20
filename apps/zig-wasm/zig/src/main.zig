@@ -13,6 +13,7 @@ pub export fn run() void {
     // TODO: Call with return
     const canvas = document.call("querySelector", .{Value.fromString("#testing-canvas")});
     const context = canvas.call("getContext", .{Value.fromString("2d")});
+    context.set("fillStyle", Value.fromString("rgb(255, 0, 0)"));
     _ = context.call("fillRect", .{ 30, 30, 50, 50 });
 
     // - Select canvas and get context

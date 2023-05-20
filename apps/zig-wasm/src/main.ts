@@ -76,9 +76,13 @@ class ZigWasm {
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)
                 },
+                set: (id: number, memberName: number, memberNameLen: number, valuePtr: number) => {
+                    const valueRef = this.values[id]
+                    const value = this.getValue(valuePtr)
+                    Reflect.set(valueRef, this.getString(memberName, memberNameLen), value)
+                },
                 call: (out: number, thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
                     const target = this.values[thisId]
-                    // console.log(target, this.getString(fnNamePtr, fnNameLen))
                     const fn = Reflect.get(target, this.getString(fnNamePtr, fnNameLen))
                     const view = this.getMemoryView()
                     const args = []
