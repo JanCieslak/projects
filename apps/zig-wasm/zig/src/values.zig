@@ -8,3 +8,4 @@ pub const @"null" = Value{ .id = 2, .kind = .object };
 pub const @"true" = Value{ .id = 3, .kind = .boolean };
 pub const @"false" = Value{ .id = 4, .kind = .boolean };
 pub const global = Value{ .id = 5, .kind = .object };
+pub const document = Value{ .id = 6, .kind = .object };

@@ -10,7 +10,7 @@ const isNumber = (value: Value): value is number => typeof value === 'number'
 class ZigWasm {
     memory?: WebAssembly.Memory
     run?: () => void
-    values: Array<any> = [NaN, undefined, null, true, false, globalThis]
+    values: Array<any> = [NaN, undefined, null, true, false, globalThis, document]
     ValueTypes = new Map<string, number>([
         ['string', 0],
         ['boolean', 1],
