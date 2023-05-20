@@ -50,6 +50,8 @@ class ZigWasm {
         }
         const head = qnan
         const kind = this.getKindId(object)
+        // TODO: Use already existing value if exists
+        
         const id = this.values.push(object) - 1
         return { head, kind, id }
     }
@@ -74,8 +76,9 @@ class ZigWasm {
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)
                 },
-                call: (thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
+                call: (out: number, thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
                     const target = this.values[thisId]
+                    // console.log(target, this.getString(fnNamePtr, fnNameLen))
                     const fn = Reflect.get(target, this.getString(fnNamePtr, fnNameLen))
                     const view = this.getMemoryView()
                     const args = []
@@ -84,7 +87,9 @@ class ZigWasm {
                         const value = this.getValue(ptr)
                         isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
-                    Reflect.apply(fn, target, args)
+                    const result = Reflect.apply(fn, target, args)
+                    const value = this.createValueIfNeeded(result)
+                    this.returnValue(out, value)
                 },
                 createStringValue: (out: number, ptr: number, len: number) => {
                     const value = this.createValueIfNeeded(this.getString(ptr, len))

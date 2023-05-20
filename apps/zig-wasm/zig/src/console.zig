@@ -19,5 +19,5 @@ pub fn log(comptime format: []const u8, args: anytype) void {
     writer.print(format, args) catch unreachable;
 
     const console = values.global.get("console");
-    console.call("log", .{Value.fromString(buffer.items)});
+    _ = console.call("log", .{Value.fromString(buffer.items)});
 }

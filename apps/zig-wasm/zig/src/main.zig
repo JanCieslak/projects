@@ -11,7 +11,9 @@ pub export fn run() void {
     const document = values.global.get("document");
 
     // TODO: Call with return
-    document.call("querySelector", .{Value.fromString("#testing-canvas")});
+    const canvas = document.call("querySelector", .{Value.fromString("#testing-canvas")});
+    const context = canvas.call("getContext", .{Value.fromString("2d")});
+    _ = context.call("fillRect", .{ 30, 30, 50, 50 });
 
     // - Select canvas and get context
     // - Create simple funcitons to make shapes like rect

@@ -20,7 +20,7 @@ pub const Value = packed struct {
     // TODO: Support non const strings
     pub fn fromString(stringValue: []const u8) Value {
         var out: Value = undefined;
-        externs.createStringRef(&out, stringValue.ptr, stringValue.len);
+        externs.createStringValue(&out, stringValue.ptr, stringValue.len);
         return out;
     }
 
@@ -34,7 +34,7 @@ pub const Value = packed struct {
         return out;
     }
 
-    pub fn call(self: Value, fnName: []const u8, args: anytype) void {
+    pub fn call(self: Value, fnName: []const u8, args: anytype) Value {
         const info = @typeInfo(@TypeOf(args)).Struct;
         assert(info.is_tuple);
         var argsArray: [info.fields.len]Value = undefined;
@@ -55,7 +55,8 @@ pub const Value = packed struct {
                 else => @panic("not supported yet"),
             };
         }
-        // TODO: Support return values
-        externs.call(self.id, fnName.ptr, fnName.len, @ptrCast([*]Value, &argsArray), argsArray.len);
+        var out: Value = undefined;
+        externs.call(&out, self.id, fnName.ptr, fnName.len, @ptrCast([*]Value, &argsArray), argsArray.len);
+        return out;
     }
 };
