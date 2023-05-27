@@ -21,11 +21,28 @@ pub export fn start() void {
     canvas = .{ .drawing_context = context };
 }
 
-var x: f64 = 30;
-const speed: f64 = 20;
+// TODO: Get those values from canvas
+const width = 800;
+const height = 600;
+
+const size = 32;
+var x: f64 = 100;
+var y: f64 = 100;
+var speed_x: f64 = 250;
+var speed_y: f64 = 400;
+
 pub export fn update(dt: f64) void {
-    canvas.clearRect(0, 0, 800, 600);
+    canvas.clearRect(0, 0, width, height);
     canvas.setFill(magenta);
-    canvas.fillRect(x, 30, 500, 60);
-    x += speed * dt;
+    canvas.fillRect(x, y, size, size);
+
+    x += speed_x * dt;
+    y += speed_y * dt;
+
+    if (x + size > width or x < 0) {
+        speed_x = -1 * speed_x;
+    }
+    if (y + size > height or y < 0) {
+        speed_y = -1 * speed_y;
+    }
 }
