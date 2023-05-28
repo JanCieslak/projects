@@ -83,6 +83,20 @@ class ZigWasm {
                     const value = this.getValue(valuePtr)
                     Reflect.set(valueRef, this.getString(memberName, memberNameLen), value)
                 },
+                construct: (out: number, classId: number, argsPtr: number, argsLen: number) => {
+                    const view = this.getMemoryView()
+                    const args = []
+                    for (let i = 0; i < argsLen; ++i) {
+                        const ptr = argsPtr + i * 8
+                        const value = this.getValue(ptr)
+                        isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
+                    }
+                    const className = this.values[classId]
+                    console.log(args, this.values)
+                    const result = Reflect.construct(className, args)
+                    const value = this.createValueIfNeeded(result)
+                    this.returnValue(out, value)
+                },
                 call: (out: number, thisId: number, fnNamePtr: number, fnNameLen: number, argsPtr: number, argsLen: number) => {
                     const target = this.values[thisId]
                     const fn = Reflect.get(target, this.getString(fnNamePtr, fnNameLen))
@@ -93,8 +107,14 @@ class ZigWasm {
                         const value = this.getValue(ptr)
                         isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
+                    console.log(args, this.values)
                     const result = Reflect.apply(fn, target, args)
                     const value = this.createValueIfNeeded(result)
+                    this.returnValue(out, value)
+                },
+                createSliceValue: (out: number, ptr: number, len: number) => {
+                    const slice = new Uint8Array(this.getMemoryBuffer(), ptr, len)
+                    const value = this.createValueIfNeeded(slice)
                     this.returnValue(out, value)
                 },
                 createStringValue: (out: number, ptr: number, len: number) => {

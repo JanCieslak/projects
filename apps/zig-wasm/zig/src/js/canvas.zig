@@ -41,4 +41,29 @@ pub const Canvas = struct {
     pub fn fillRect(self: Self, x: f64, y: f64, w: f64, h: f64) void {
         _ = self.drawing_context.call("fillRect", .{ x, y, w, h });
     }
+
+    pub fn fillCircle(self: Self, x: f64, y: f64, radius: f64) void {
+        _ = self.drawing_context.call("beginPath", .{});
+        _ = self.drawing_context.call("arc", .{ x, y, radius, 0, 2 * std.math.pi });
+        _ = self.drawing_context.call("fill", .{});
+    }
+
+    pub fn getImageData(self: Self) void { // TODO: Hardcoded data
+        const image_data = self.drawing_context.call("getImageData", .{ 0, 0, 800, 600 });
+        const data = image_data.get("data");
+        // TODO: @intToPtr()
+        _ = data;
+    }
+
+    pub fn putImageData(self: Self, image_data: Value) void {
+        _ = self.drawing_context.call("putImageData", .{ image_data, 0, 0 });
+    }
 };
+
+pub const Pixel = packed struct {
+    a: u8 = 0,
+    b: u8 = 0,
+    g: u8 = 0,
+    r: u8 = 0,
+};
+pub const ImageData = struct { pixels: []Pixel };
