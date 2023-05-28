@@ -92,7 +92,7 @@ class ZigWasm {
                         isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
                     const className = this.values[classId]
-                    console.log(args, this.values)
+                    // console.log(args, this.values)
                     const result = Reflect.construct(className, args)
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)
@@ -107,7 +107,7 @@ class ZigWasm {
                         const value = this.getValue(ptr)
                         isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
-                    console.log(args, this.values)
+                    // console.log(args, this.values)
                     const result = Reflect.apply(fn, target, args)
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)

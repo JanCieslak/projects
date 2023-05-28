@@ -34,11 +34,11 @@ pub export fn start() void {
 
     // Pixel drawing exmaple
     image_data = js.canvas.ImageData{ .pixels = alloc.alloc(js.canvas.Pixel, width * height * 4) catch @panic("unable to alloc pixel buffer") };
-    for (0..image_data.pixels.len) |i| {
-        if (i % 2 == 0) {
-            image_data.pixels[i] = js.canvas.Pixel{ .r = 255, .a = 100 };
-        }
-    }
+    // for (0..image_data.pixels.len) |i| {
+    //     if (i % 2 == 0) {
+    //         image_data.pixels[i] = js.canvas.Pixel{ .r = 255, .a = 100 };
+    //     }
+    // }
 
     const pixelSlice: [*]u8 = @ptrCast([*]u8, @alignCast(1, @ptrCast([*]js.canvas.Pixel, image_data.pixels)));
     var pixelSliceRef: Value = undefined;
@@ -46,17 +46,31 @@ pub export fn start() void {
 
     const pixels = Value.construct("Uint8ClampedArray", .{pixelSliceRef});
     image_data_ref = Value.construct("ImageData", .{ pixels, width, height });
-    canvas.putImageData(image_data_ref);
 }
 
-const size = 32;
-var x: f64 = 100;
-var y: f64 = 100;
-var speed_x: f64 = 250;
-var speed_y: f64 = 400;
+// const size = 32;
+// var x: f64 = 100;
+// var y: f64 = 100;
+// var speed_x: f64 = 250;
+// var speed_y: f64 = 400;
+var pixel = 0;
 
 pub export fn update(dt: f64) void {
     _ = dt;
+
+    // TODO: Realtime pixels
+    // image_data.pixels[pixel].r = 255;
+    // image_data.pixels[pixel].g = 0;
+    // image_data.pixels[pixel].b = 0;
+    // image_data.pixels[pixel].a = 255;
+    // pixel += 1;
+
+    // if (pixel == width * height) {
+    //     pixel = 0;
+    // }
+
+    // canvas.putImageData(image_data_ref);
+
     // Canvas drawing example
     // canvas.clearRect(0, 0, width, height);
     // canvas.setFill(magenta);
