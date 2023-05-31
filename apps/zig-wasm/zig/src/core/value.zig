@@ -1,7 +1,7 @@
 const std = @import("std");
 const assert = std.debug.assert;
 const externs = @import("./externs.zig");
-const values = @import("../values.zig");
+const values = @import("./values.zig");
 
 pub const Kind = enum(u3) {
     string,
@@ -37,6 +37,12 @@ pub const Value = packed struct {
         return out;
     }
 
+    pub fn getNumber(self: Self, member: []const u8) f64 {
+        var out: f64 = undefined;
+        externs.getNumber(&out, self.id, member.ptr, member.len);
+        return out;
+    }
+
     pub fn set(self: Self, member: []const u8, value: Value) void {
         externs.set(self.id, member.ptr, member.len, &value);
     }
@@ -57,7 +63,7 @@ pub const Value = packed struct {
                 // },
                 .Int,
                 .ComptimeInt,
-                => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
+                => @bitCast(Value, @bitCast(u64, @intToFloat(f64, @field(args, field.name)))),
                 .Float, .ComptimeFloat => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
                 else => @panic("not supported yet"),
             };
@@ -83,7 +89,7 @@ pub const Value = packed struct {
                 // },
                 .Int,
                 .ComptimeInt,
-                => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
+                => @bitCast(Value, @bitCast(u64, @intToFloat(f64, @field(args, field.name)))),
                 .Float, .ComptimeFloat => @bitCast(Value, @bitCast(u64, @as(f64, @field(args, field.name)))),
                 else => @panic("not supported yet"),
             };

@@ -4,12 +4,26 @@ const allocator = std.heap.page_allocator;
 const core = @import("../core/core.zig");
 const Value = core.value.Value;
 
+const document = @import("./document.zig");
 const Color = @import("./color.zig").Color;
 
 pub const Canvas = struct {
     drawing_context: Value,
+    width: u64,
+    height: u64,
 
     const Self = @This();
+
+    pub fn new(selector: []const u8) Self {
+        const drawing_context = document.querySelector(selector).call("getContext", .{Value.fromString("2d")});
+
+        return .{
+            .drawing_context = drawing_context,
+            // TODO: FIX
+            .width = 800, // @floatToInt(u64, drawing_context.getNumber("width")),
+            .height = 600, //@floatToInt(u64, drawing_context.getNumber("height")),
+        };
+    }
 
     pub fn setFill(self: Self, color: Color) void {
         switch (color) {
@@ -66,4 +80,24 @@ pub const Pixel = packed struct {
     g: u8 = 0,
     r: u8 = 0,
 };
-pub const ImageData = struct { pixels: []Pixel };
+
+pub const ImageData = struct {
+    ref: Value,
+    slice_ref: Value,
+    pixels: []Pixel,
+
+    const Self = @This();
+
+    pub fn new(width: u64, height: u64) Self {
+        const pixels = allocator.alloc(Pixel, @intCast(usize, width * height * 4)) catch @panic("unable to alloc pixel buffer");
+        const raw: [*]u8 = @ptrCast([*]u8, @alignCast(1, @ptrCast([*]Pixel, pixels)));
+        var slice_ref: Value = undefined;
+        core.externs.createSliceValue(&slice_ref, raw, @intCast(usize, width * height * 4));
+        const ref = Value.construct("ImageData", .{ slice_ref, width, height });
+        return .{
+            .ref = ref,
+            .slice_ref = slice_ref,
+            .pixels = pixels,
+        };
+    }
+};

@@ -4,3 +4,6 @@ pub const externs = struct {
 pub const value = struct {
     pub usingnamespace @import("./value.zig");
 };
+pub const values = struct {
+    pub usingnamespace @import("./values.zig");
+};

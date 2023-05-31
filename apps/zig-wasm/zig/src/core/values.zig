@@ -1,5 +1,4 @@
-const core = @import("./core/core.zig");
-const Value = core.value.Value;
+const Value = @import("./value.zig").Value;
 
 // These are predefined values (refs) in the ZigWasm.values array
 
