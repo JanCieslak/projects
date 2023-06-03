@@ -99,7 +99,6 @@ class ZigWasm {
                         isNumber(value) ? args.push(value) : args.push(this.values[view.getUint32(ptr, true)])
                     }
                     const className = this.values[classId]
-                    console.log(args, this.values)
                     const result = Reflect.construct(className, args)
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)
@@ -119,9 +118,9 @@ class ZigWasm {
                     const value = this.createValueIfNeeded(result)
                     this.returnValue(out, value)
                 },
-                createSliceValue: (out: number, ptr: number, len: number) => {
+                createSliceValue: (out: number, id: number, ptr: number, len: number) => {
                     // TODO: Receive type e.g. "Uint8ClampedArray" or "Uint8Array" to create slice of exact type
-                    const slice = new Uint8ClampedArray(this.getMemoryBuffer(), ptr, len)
+                    const slice = Reflect.construct(this.values[id], [this.getMemoryBuffer(), ptr, len])
                     const value = this.createValueIfNeeded(slice)
                     this.returnValue(out, value)
                 },

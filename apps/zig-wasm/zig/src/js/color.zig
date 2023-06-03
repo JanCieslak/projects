@@ -28,3 +28,6 @@ pub const Color = union(enum) {
         return .{ .rgba = .{ .r = r, .g = g, .b = b, .a = a } };
     }
 };
+
+// TODO: predefine basic colors (e.g. from CSS)
+// const magenta = js.color.Color.fromRGBA(255, 0, 255, 0.7);

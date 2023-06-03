@@ -11,4 +11,4 @@ pub extern fn call(out: *Value, thisId: u32, fnName: [*]const u8, fnNameLen: usi
 
 // todo: "Create" string ref in order to use it, e.g. in a call function as one of the args
 pub extern fn createStringValue(out: *Value, stringPtr: [*]const u8, stringLen: usize) void;
-pub extern fn createSliceValue(out: *Value, ptr: [*]u8, len: usize) void;
+pub extern fn createSliceValue(out: *Value, classId: u32, ptr: [*]u8, len: usize) void;
