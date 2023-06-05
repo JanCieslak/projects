@@ -1,4 +1,6 @@
+const externs = @import("./core/core.zig").externs;
 const js = @import("./js/js.zig");
+const console = js.console;
 const webgl = js.graphics.webgl;
 const Renderer = webgl.WebGlRenderer;
 const Shader = webgl.Shader;
@@ -14,9 +16,12 @@ pub export fn start() void {
 }
 
 var pixel: usize = 0;
+var time: f64 = 0.0;
 
 pub export fn update(dt: f64) void {
-    _ = dt;
+    time += dt;
+    renderer.shader.uniformf64("iTime", time);
+
     renderer.clear();
     renderer.begin();
     renderer.end();

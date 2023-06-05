@@ -1,5 +1,6 @@
 const Value = @import("./value.zig").Value;
 
+pub extern fn noLoop() void;
 pub extern fn testRef(ptr: *Value) void;
 // todo: make cache for values
 pub extern fn get(out: *Value, id: u32, memberName: [*]const u8, len: usize) void;

@@ -13,7 +13,7 @@ const gl = @import("./gl.zig");
 const Shader = @import("./shader.zig").Shader;
 
 const COMPONENTS_PER_VERTEX = 2;
-const MAX_VERTICES = 3 * COMPONENTS_PER_VERTEX;
+const MAX_VERTICES = 6 * COMPONENTS_PER_VERTEX;
 
 pub const WebGlRenderer = struct {
     shader: Shader,
@@ -27,7 +27,7 @@ pub const WebGlRenderer = struct {
     const Self = @This();
 
     pub fn new(selector: []const u8, vertexShaderCode: []const u8, fragmentShaderCode: []const u8) Self {
-        const context = document.querySelector(selector).call("getContext", .{Value.fromString("webgl")});
+        const context = document.querySelector(selector).call("getContext", .{Value.fromString("webgl2")});
 
         const shader = Shader.new(context, vertexShaderCode, fragmentShaderCode);
 
@@ -44,14 +44,23 @@ pub const WebGlRenderer = struct {
         var bufferRef: Value = undefined;
         var buffer = allocator.alloc(f32, MAX_VERTICES) catch unreachable;
 
-        buffer[0] = 0.0;
-        buffer[1] = 0.0;
+        buffer[0] = -1.0;
+        buffer[1] = -1.0;
 
         buffer[2] = 1.0;
         buffer[3] = 1.0;
 
         buffer[4] = 1.0;
-        buffer[5] = 0.0;
+        buffer[5] = -1.0;
+
+        buffer[6] = -1.0;
+        buffer[7] = -1.0;
+
+        buffer[8] = 1.0;
+        buffer[9] = 1.0;
+
+        buffer[10] = -1.0;
+        buffer[11] = 1.0;
 
         externs.createSliceValue(&bufferRef, floatArray.id, @ptrCast([*]u8, buffer), MAX_VERTICES);
 
@@ -74,7 +83,7 @@ pub const WebGlRenderer = struct {
             .bufferRef = bufferRef,
             // TODO: FIX
             .width = 800, // @floatToInt(u64, drawing_context.getNumber("width")),
-            .height = 600, //@floatToInt(u64, drawing_context.getNumber("height")),
+            .height = 800, //@floatToInt(u64, drawing_context.getNumber("height")),
         };
     }
 
@@ -91,6 +100,6 @@ pub const WebGlRenderer = struct {
     }
 
     pub fn end(self: Self) void {
-        _ = self.context.call("drawArrays", .{ gl.TRIANGELS, 0, 3 });
+        _ = self.context.call("drawArrays", .{ gl.TRIANGELS, 0, 6 });
     }
 };

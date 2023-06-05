@@ -8,6 +8,7 @@ type Value = { head: number; kind: number; id: number } | number
 const isNumber = (value: Value): value is number => typeof value === 'number'
 
 class ZigWasm {
+    shouldFinish = false
     memory?: WebAssembly.Memory
     start?: () => void
     update?: (timestamp: number) => void
@@ -70,6 +71,7 @@ class ZigWasm {
     importObject = (): WebAssembly.Imports => {
         return {
             env: {
+                noLoop: () => { this.shouldFinish = true },
                 consoleLog: (ptr: number, len: number) => console.log(this.getString(ptr, len)),
                 get: (out: number, id: number, memberName: number, memberNameLen: number) => {
                     const valueRef = this.values[id]
@@ -142,8 +144,12 @@ function updateWrapper(timestamp: number) {
         zigWasm.update((timestamp - oldTimestamp) / 1000)
     }
     oldTimestamp = timestamp;
+    const id = requestAnimationFrame(updateWrapper)
 
-    requestAnimationFrame(updateWrapper)
+    if (zigWasm.shouldFinish) {
+        cancelAnimationFrame(id)
+        return
+    }
 }
 
 WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
