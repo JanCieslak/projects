@@ -1,0 +1,33 @@
+{{ $canvasId := .Get 0 }}
+{{ $wasm := .Get 1 }}
+
+<canvas id="{{ $canvasId }}" width="800" height="800"> </canvas>
+
+<script>
+    // TODO: Generate script from file so we'll be able to replace zigWasm ?
+    const zigWasm = new ZigWasm()
+
+    let oldTimestamp = 0;
+
+    function updateWrapper(timestamp) {
+        if (zigWasm.update) {
+            zigWasm.update((timestamp - oldTimestamp) / 1000)
+        }
+        oldTimestamp = timestamp;
+        const id = requestAnimationFrame(updateWrapper)
+
+        if (zigWasm.shouldFinish) {
+            cancelAnimationFrame(id)
+            return
+        }
+    }
+
+    WebAssembly.instantiateStreaming(fetch('{{ .Site.BaseURL }}/{{ $wasm }}'), zigWasm.importObject())
+        .then((obj) => zigWasm.init(obj))
+        .then(() => {
+            if (zigWasm.start && zigWasm.update) {
+                zigWasm.start('{{ $canvasId }}')
+                requestAnimationFrame(updateWrapper)
+            }
+        })
+</script>

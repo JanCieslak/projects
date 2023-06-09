@@ -11,7 +11,8 @@ const fragment = @embedFile("./shaders/fragment.glsl");
 var renderer: Renderer = undefined;
 
 pub export fn start() void {
-    renderer = Renderer.new("#testing-canvas", vertex, fragment);
+    // TODO: Take selector as input to make it generic / resusable without multiple versions of the same exe
+    renderer = Renderer.new("#canvas2", vertex, fragment);
     renderer.clearColor(0.3, 0.3, 0.6, 1.0);
 }
 

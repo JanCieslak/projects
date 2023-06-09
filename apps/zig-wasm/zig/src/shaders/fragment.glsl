@@ -21,20 +21,24 @@ vec3 palette(float t) {
 void main() {
     vec2 iResolution = vec2(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
     vec2 fragCoord = gl_FragCoord.xy;
+    vec3 finalColor = vec3(0.0);
 
     vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
     vec2 uv0 = uv;
-    uv = fract(uv * 2.0) - 0.5;
 
-    float d = length(uv);
+    for (float i = 0.0; i < 4.0; i++) {
+        uv = fract(uv * 1.5) - 0.5;
 
-    vec3 color = palette(length(uv0) + iTime);
+        float d = length(uv) * exp(-length(uv0));
 
-    d = sin(d * 8.0 + iTime) / 8.0;
-    d = abs(d);
-    d = 0.02 / d;
+        vec3 color = palette(length(uv0) + i * 4.0 + iTime * 0.4);
 
-    color *= d;
+        d = sin(d * 8.0 + iTime) / 8.0;
+        d = abs(d);
+        d = pow(0.01 / d, 2.0);
 
-    outColor = vec4(color, 1.0);
+        finalColor += color * d;
+    }
+
+    outColor = vec4(finalColor, 1.0);
 }

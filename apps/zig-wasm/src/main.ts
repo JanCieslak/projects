@@ -135,28 +135,28 @@ class ZigWasm {
     }
 }
 
-const zigWasm = new ZigWasm()
+// const zigWasm = new ZigWasm()
 
-let oldTimestamp = 0;
+// let oldTimestamp = 0;
 
-function updateWrapper(timestamp: number) {
-    if (zigWasm.update) {
-        zigWasm.update((timestamp - oldTimestamp) / 1000)
-    }
-    oldTimestamp = timestamp;
-    const id = requestAnimationFrame(updateWrapper)
+// function updateWrapper(timestamp: number) {
+//     if (zigWasm.update) {
+//         zigWasm.update((timestamp - oldTimestamp) / 1000)
+//     }
+//     oldTimestamp = timestamp;
+//     const id = requestAnimationFrame(updateWrapper)
 
-    if (zigWasm.shouldFinish) {
-        cancelAnimationFrame(id)
-        return
-    }
-}
+//     if (zigWasm.shouldFinish) {
+//         cancelAnimationFrame(id)
+//         return
+//     }
+// }
 
-WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
-    .then((obj) => zigWasm.init(obj))
-    .then(() => {
-        if (zigWasm.start && zigWasm.update) {
-            zigWasm.start()
-            requestAnimationFrame(updateWrapper)
-        }
-    })
+// WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
+//     .then((obj) => zigWasm.init(obj))
+//     .then(() => {
+//         if (zigWasm.start && zigWasm.update) {
+//             zigWasm.start()
+//             requestAnimationFrame(updateWrapper)
+//         }
+//     })

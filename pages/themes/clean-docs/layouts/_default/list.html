@@ -1,8 +1,0 @@
-{{ define "main" }}
-    <div class="d-flex flex-column vh-100 justify-content-center align-items-center">
-        <h1 class="display-5 text-center">{{ .Title }}</h1>
-        {{ range .Pages.ByParam "order" }}
-            {{ partial "metadata.html" . }}
-        {{ end }}
-    </div>
-{{ end }}
