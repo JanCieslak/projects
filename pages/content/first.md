@@ -6,6 +6,6 @@ draft: false
 
 ## Hello world
 
-{{< zig-wasm-canvas canvas1 canvas1.wasm >}}
+{{< zig-wasm-canvas canvas1 zig.wasm >}}
 
-{{< zig-wasm-canvas canvas2 canvas2.wasm >}}
+{{< zig-wasm-canvas canvas2 zig.wasm >}}

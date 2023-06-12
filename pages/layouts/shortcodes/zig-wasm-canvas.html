@@ -1,33 +1,40 @@
 {{ $canvasId := .Get 0 }}
 {{ $wasm := .Get 1 }}
 
+{{ $zigWasm := safeJS $canvasId }}
+
 <canvas id="{{ $canvasId }}" width="800" height="800"> </canvas>
 
+<!-- Refactor this mess if possible... -->
+
 <script>
-    // TODO: Generate script from file so we'll be able to replace zigWasm ?
-    const zigWasm = new ZigWasm()
+    const {{ $zigWasm }} = new ZigWasm()
 
-    let oldTimestamp = 0;
+    let {{ $zigWasm }}_oldTimestamp = 0;
 
-    function updateWrapper(timestamp) {
-        if (zigWasm.update) {
-            zigWasm.update((timestamp - oldTimestamp) / 1000)
+    function {{ $zigWasm }}_updateWrapper(timestamp) {
+        if ({{ $zigWasm }}.update) {
+            {{ $zigWasm }}.update((timestamp - {{ $zigWasm }}_oldTimestamp) / 1000)
         }
-        oldTimestamp = timestamp;
-        const id = requestAnimationFrame(updateWrapper)
+        {{ $zigWasm }}_oldTimestamp = timestamp;
+        const id = requestAnimationFrame({{ $zigWasm }}_updateWrapper)
 
-        if (zigWasm.shouldFinish) {
+        if ({{ $zigWasm }}.shouldFinish) {
             cancelAnimationFrame(id)
             return
         }
     }
 
-    WebAssembly.instantiateStreaming(fetch('{{ .Site.BaseURL }}/{{ $wasm }}'), zigWasm.importObject())
-        .then((obj) => zigWasm.init(obj))
+    WebAssembly.instantiateStreaming(fetch('{{ .Site.BaseURL }}/{{ $wasm }}'), {{ $zigWasm }}.importObject())
+        .then((obj) => {{ $zigWasm }}.init(obj))
         .then(() => {
-            if (zigWasm.start && zigWasm.update) {
-                zigWasm.start('{{ $canvasId }}')
-                requestAnimationFrame(updateWrapper)
-            }
+        if ({{ $zigWasm }}.start && {{ $zigWasm }}.update) {
+            const textBytes = textEncoder.encode('#{{ $zigWasm }}')
+            const ptr = {{ $zigWasm }}.alloc(textBytes.length)
+            const buffer = new Uint8Array({{ $zigWasm }}.getMemoryBuffer(), ptr, textBytes.byteLength)
+            buffer.set(textBytes)
+            {{ $zigWasm }}.start(ptr, textBytes.length)
+            requestAnimationFrame({{ $zigWasm }}_updateWrapper)
+        }
         })
 </script>

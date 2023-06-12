@@ -10,7 +10,7 @@ Website is using a framework called Hugo. TODO: ...
 
 TODO:
 
-- refactor to work with multiple wasm files on one a single page
+- Pass multiple arguments into wasm programs (generic solution - any number of args of any type)
 
 ### Zig + WASM
 

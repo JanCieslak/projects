@@ -7,11 +7,16 @@ type Value = { head: number; kind: number; id: number } | number
 
 const isNumber = (value: Value): value is number => typeof value === 'number'
 
+type StartFnType = (stringPtr: number, stringLen: number) => void
+type UpdateFnType = (timestamp: number) => void
+type AllocFnType = (len: number) => number
+
 class ZigWasm {
     shouldFinish = false
     memory?: WebAssembly.Memory
-    start?: () => void
-    update?: (timestamp: number) => void
+    start?: StartFnType
+    update?: UpdateFnType
+    alloc?: AllocFnType
     values: Array<any> = [NaN, undefined, null, true, false, globalThis, document]
     ValueTypes = new Map<string, number>([
         ['string', 0],
@@ -23,10 +28,11 @@ class ZigWasm {
     ])
 
     init = (object: WebAssembly.WebAssemblyInstantiatedSource) => {
-        const { memory, start, update } = object.instance.exports
+        const { memory, start, update, alloc } = object.instance.exports
         this.memory = memory as WebAssembly.Memory
-        this.start = start as () => void
-        this.update = update as (timestamp: number) => void
+        this.start = start as StartFnType
+        this.update = update as UpdateFnType
+        this.alloc = alloc as AllocFnType
     }
 
     getMemoryBuffer = (): ArrayBuffer => this.memory!.buffer
@@ -156,7 +162,11 @@ class ZigWasm {
 //     .then((obj) => zigWasm.init(obj))
 //     .then(() => {
 //         if (zigWasm.start && zigWasm.update) {
-//             zigWasm.start()
+//             const textBytes = textEncoder.encode('#testing-canvas')
+//             const ptr = zigWasm.alloc(textBytes.length)
+//             const buffer = new Uint8Array(zigWasm.getMemoryBuffer(), ptr, textBytes.byteLength)
+//             buffer.set(textBytes)
+//             zigWasm.start(ptr, textBytes.length)
 //             requestAnimationFrame(updateWrapper)
 //         }
 //     })
