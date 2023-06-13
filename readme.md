@@ -22,7 +22,4 @@ TODO:
 - Hot reload Vite on wasm change
 - Better conosle.log
 - General code refactor (TODOs, Shader, GLRenderer, etc.)
-
-Nice to have:
-
-- Hot reload on shader change
+- Make it a library

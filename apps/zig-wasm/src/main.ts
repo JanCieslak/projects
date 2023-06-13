@@ -141,32 +141,32 @@ class ZigWasm {
     }
 }
 
-// const zigWasm = new ZigWasm()
+const zigWasm = new ZigWasm()
 
-// let oldTimestamp = 0;
+let oldTimestamp = 0;
 
-// function updateWrapper(timestamp: number) {
-//     if (zigWasm.update) {
-//         zigWasm.update((timestamp - oldTimestamp) / 1000)
-//     }
-//     oldTimestamp = timestamp;
-//     const id = requestAnimationFrame(updateWrapper)
+function updateWrapper(timestamp: number) {
+    if (zigWasm.update) {
+        zigWasm.update((timestamp - oldTimestamp) / 1000)
+    }
+    oldTimestamp = timestamp;
+    const id = requestAnimationFrame(updateWrapper)
 
-//     if (zigWasm.shouldFinish) {
-//         cancelAnimationFrame(id)
-//         return
-//     }
-// }
+    if (zigWasm.shouldFinish) {
+        cancelAnimationFrame(id)
+        return
+    }
+}
 
-// WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
-//     .then((obj) => zigWasm.init(obj))
-//     .then(() => {
-//         if (zigWasm.start && zigWasm.update) {
-//             const textBytes = textEncoder.encode('#testing-canvas')
-//             const ptr = zigWasm.alloc(textBytes.length)
-//             const buffer = new Uint8Array(zigWasm.getMemoryBuffer(), ptr, textBytes.byteLength)
-//             buffer.set(textBytes)
-//             zigWasm.start(ptr, textBytes.length)
-//             requestAnimationFrame(updateWrapper)
-//         }
-//     })
+WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
+    .then((obj) => zigWasm.init(obj))
+    .then(() => {
+        if (zigWasm.start && zigWasm.update) {
+            const textBytes = textEncoder.encode('#testing-canvas')
+            const ptr = zigWasm.alloc(textBytes.length)
+            const buffer = new Uint8Array(zigWasm.getMemoryBuffer(), ptr, textBytes.byteLength)
+            buffer.set(textBytes)
+            zigWasm.start(ptr, textBytes.length)
+            requestAnimationFrame(updateWrapper)
+        }
+    })
