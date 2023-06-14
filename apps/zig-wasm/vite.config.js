@@ -1,11 +1,14 @@
-import { build } from 'vite';
+import WasmReload from './wasmReload';
 
 /** @type {import('vite').UserConfig} */
 export default {
     root: './',
-    assetsInclude: ['**/*.wasm'],
-    publicDir: './zig',
     build: {
-        target: ''
-    }
+        watch: {
+            include: 'resources/**'
+        }
+    },
+    plugins: [
+        WasmReload(),
+    ],
 }

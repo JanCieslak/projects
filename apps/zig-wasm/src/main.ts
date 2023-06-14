@@ -158,7 +158,7 @@ function updateWrapper(timestamp: number) {
     }
 }
 
-WebAssembly.instantiateStreaming(fetch('/zig-out/lib/zig.wasm'), zigWasm.importObject())
+WebAssembly.instantiateStreaming(fetch('./resources/zig.wasm'), zigWasm.importObject())
     .then((obj) => zigWasm.init(obj))
     .then(() => {
         if (zigWasm.start && zigWasm.update) {
