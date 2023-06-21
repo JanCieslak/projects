@@ -1,53 +1,23 @@
 const std = @import("std");
 
-// Although this function looks imperative, note that its job is to
-// declaratively construct a build graph that will be executed by an external
-// runner.
-pub fn build(b: *std.Build) void {
-    b.install_prefix = "C:/Users/JanCieslak/Desktop/projects/apps/zig-wasm/resources";
-    b.dest_dir = "C:/Users/JanCieslak/Desktop/projects/apps/zig-wasm/resources";
+pub const Package = struct {
+    zig_wasm: *std.build.Module,
 
-    // Standard target options allows the person running `zig build` to choose
-    // what target to build for. Here we do not override the defaults, which
-    // means any target is allowed, and the default is native. Other options
-    // for restricting supported target set are available.
-    const target = b.standardTargetOptions(.{ .default_target = .{ .cpu_arch = .wasm32, .os_tag = .freestanding } });
+    pub fn link(pkg: Package, exe: *std.build.CompileStep) void {
+        exe.addModule("zig-wasm", pkg.zig_wasm);
+    }
+};
 
-    // Standard optimization options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
-    // set a preferred release mode, allowing the user to decide how to optimize.
-    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .Debug });
-
-    const lib = b.addSharedLibrary(.{
-        .name = "zig",
-        // In this case the main source file is merely a path, however, in more
-        // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main.zig" },
-        .target = target,
-        .optimize = optimize,
+pub fn package(b: *std.Build) Package {
+    const zig_wasm = b.createModule(.{
+        .source_file = .{ .path = thisDir() ++ "/src/lib.zig" },
     });
 
-    lib.rdynamic = true;
-    lib.override_dest_dir = .{ .custom = "../../resources" };
+    return .{
+        .zig_wasm = zig_wasm,
+    };
+}
 
-    // This declares intent for the library to be installed into the standard
-    // location when the user invokes the "install" step (the default step when
-    // running `zig build`).
-    b.installArtifact(lib);
-
-    // Creates a step for unit testing. This only builds the test executable
-    // but does not run it.
-    // const main_tests = b.addTest(.{
-    //     .root_source_file = .{ .path = "src/main.zig" },
-    //     .target = target,
-    //     .optimize = optimize,
-    // });
-
-    // const run_main_tests = b.addRunArtifact(main_tests);
-
-    // This creates a build step. It will be visible in the `zig build --help` menu,
-    // and can be selected like this: `zig build test`
-    // This will evaluate the `test` step rather than the default, which is "install".
-    // const test_step = b.step("test", "Run library tests");
-    // test_step.dependOn(&run_main_tests.step);
+inline fn thisDir() []const u8 {
+    return comptime std.fs.path.dirname(@src().file) orelse ".";
 }

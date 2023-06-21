@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.net.http.WebSocket;
 import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -9,7 +8,8 @@ public class RunOnChange {
     public static void main(String[] args) throws IOException, InterruptedException {
         var directory = Paths.get(args[0]);
         var directoryFile = directory.toFile();
-        var command = Arrays.copyOfRange(args, 1, args.length);
+        var context = Paths.get(args[1]).toFile();
+        var command = Arrays.copyOfRange(args, 2, args.length);
 
         var watcher = FileSystems.getDefault().newWatchService();
         Files.walk(directory)
@@ -28,7 +28,7 @@ public class RunOnChange {
                 continue;
             }
 
-            var out = Runtime.getRuntime().exec(command, new String[]{}, directoryFile);
+            var out = Runtime.getRuntime().exec(command, new String[]{}, context);
             var status = out.waitFor();
 
             if (status != 0) {

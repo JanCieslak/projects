@@ -1,0 +1,17 @@
+{
+  "name": "zig-playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "js": "file:../zig-wasm/js",
+    "prettier": "2.8.8",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  }
+}

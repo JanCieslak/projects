@@ -27,6 +27,14 @@ pub const Value = packed struct {
         return out;
     }
 
+    pub fn fromFunction(f: fn (arg: Value) void) Value {
+        _ = f;
+        var out: Value = undefined;
+        // TODO: Implement with multiple values
+        // externs.createFunctionValue()
+        return out;
+    }
+
     pub fn isNumber(self: Self) bool {
         return !std.math.isNan(@bitCast(f64, self));
     }

@@ -44,23 +44,23 @@ pub const WebGlRenderer = struct {
         var bufferRef: Value = undefined;
         var buffer = allocator.alloc(f32, MAX_VERTICES) catch unreachable;
 
-        buffer[0] = -1.0;
-        buffer[1] = -1.0;
+        buffer[0] = -0.5;
+        buffer[1] = -0.5;
 
-        buffer[2] = 1.0;
-        buffer[3] = 1.0;
+        buffer[2] = 0.5;
+        buffer[3] = 0.5;
 
-        buffer[4] = 1.0;
-        buffer[5] = -1.0;
+        buffer[4] = 0.5;
+        buffer[5] = -0.5;
 
-        buffer[6] = -1.0;
-        buffer[7] = -1.0;
+        buffer[6] = -0.5;
+        buffer[7] = -0.5;
 
-        buffer[8] = 1.0;
-        buffer[9] = 1.0;
+        buffer[8] = 0.5;
+        buffer[9] = 0.5;
 
-        buffer[10] = -1.0;
-        buffer[11] = 1.0;
+        buffer[10] = -0.5;
+        buffer[11] = 0.5;
 
         externs.createSliceValue(&bufferRef, floatArray.id, @ptrCast([*]u8, buffer), MAX_VERTICES);
 
