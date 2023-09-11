@@ -56,11 +56,12 @@ fn keyboardCallback(event: Value) void {
 pub export fn start(stringPtr: [*]u8, stringLen: usize) void {
     renderer = Renderer.new(stringPtr[0..stringLen]);
     renderer.setFill(Color.fromNamed("grey"));
-    _ = zig_wasm.core.values.document.call("addEventListener", .{ Value.fromString("keydown"), Value.fromFunction(keyboardCallback) });
+    // _ = zig_wasm.core.values.document.call("addEventListener", .{ Value.fromString("keydown"), Value.fromFunction(keyboardCallback) });
 }
 
 pub export fn update(dt: f64) void {
     renderer.clearRect(0, 0, 800, 800);
+    renderer.fillCircle(10, 10, 30);
 
     world.update(dt);
     world.render(&renderer);
