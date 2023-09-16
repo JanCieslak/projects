@@ -1,0 +1,19 @@
+body {
+    background-color: black;
+}
+
+@font-face {
+    font-family: 'RetroFont';
+    src: url('../fonts/ka1-webfont.woff2') format('woff2'),
+    url('../fonts/ka1-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.retro {
+    font-family: 'RetroFont', serif;
+}
+
+.gap {
+gap: 20px;
+}
