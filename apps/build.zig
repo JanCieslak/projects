@@ -1,7 +1,6 @@
 const std = @import("std");
 
 pub const zig_wasm = @import("./zig-wasm/zig/build.zig");
-pub const zig_test = @import("./zig-test/build.zig");
 
 // const Project = struct {
 //     name: []const u8,
@@ -28,7 +27,7 @@ fn install(b: *std.Build, compile_step: *std.Build.CompileStep, comptime name: [
         compile_step.strip = true;
 
     const install_step = b.step(name, "Build '" ++ name);
-    const install_artifact_step = b.addInstallArtifact(compile_step);
+    const install_artifact_step = b.addInstallArtifact(compile_step, .{});
     install_artifact_step.dest_dir = .{ .custom = "../zig-playground/js/resources" };
     install_step.dependOn(&install_artifact_step.step);
 

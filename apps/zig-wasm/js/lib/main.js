@@ -15,7 +15,8 @@ export class ZigWasm {
             ['function', 5],
         ]);
         this.init = (object) => {
-            const { memory, start, update, alloc } = object.instance.exports;
+            const { memory, start, update, alloc, ...rest } = object.instance.exports;
+            this.exports = rest;
             this.memory = memory;
             this.start = start;
             this.update = update;
@@ -113,6 +114,12 @@ export class ZigWasm {
                         const value = this.createValueIfNeeded(slice);
                         this.returnValue(out, value);
                     },
+                    // right now supports one function
+                    createFunctionValue: (out, functionNamePointer, functionNameLen, arg) => {
+                        const fnName = this.getString(functionNamePointer, functionNameLen);
+                        const fn = Reflect.get(this.exports, fnName);
+                        fn(arg);
+                    },
                     createStringValue: (out, ptr, len) => {
                         const value = this.createValueIfNeeded(this.getString(ptr, len));
                         this.returnValue(out, value);
@@ -122,28 +129,3 @@ export class ZigWasm {
         };
     }
 }
-// const zigWasm = new ZigWasm()
-// let oldTimestamp = 0;
-// function updateWrapper(timestamp: number) {
-//     if (zigWasm.update) {
-//         zigWasm.update((timestamp - oldTimestamp) / 1000)
-//     }
-//     oldTimestamp = timestamp;
-//     const id = requestAnimationFrame(updateWrapper)
-//     if (zigWasm.shouldFinish) {
-//         cancelAnimationFrame(id)
-//         return
-//     }
-// }
-// WebAssembly.instantiateStreaming(fetch('./resources/zig.wasm'), zigWasm.importObject())
-//     .then((obj) => zigWasm.init(obj))
-//     .then(() => {
-//         if (zigWasm.start && zigWasm.update) {
-//             const textBytes = textEncoder.encode('#testing-canvas')
-//             const ptr = zigWasm.alloc(textBytes.length)
-//             const buffer = new Uint8Array(zigWasm.getMemoryBuffer(), ptr, textBytes.byteLength)
-//             buffer.set(textBytes)
-//             zigWasm.start(ptr, textBytes.length)
-//             requestAnimationFrame(updateWrapper)
-//         }
-//     })

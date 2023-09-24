@@ -12,6 +12,7 @@ export declare class ZigWasm {
     start?: StartFnType;
     update?: UpdateFnType;
     alloc?: AllocFnType;
+    exports?: WebAssembly.Exports;
     values: Array<any>;
     ValueTypes: Map<string, number>;
     init: (object: WebAssembly.WebAssemblyInstantiatedSource) => void;
