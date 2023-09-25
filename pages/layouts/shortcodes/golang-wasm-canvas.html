@@ -1,0 +1,40 @@
+{{ $canvasId := .Get 0 }}
+{{ $wasm := .Get 1 }}
+
+{{ $zigWasm := safeJS $canvasId }}
+
+<canvas id="{{ $canvasId }}" width="800" height="800"> </canvas>
+
+<!-- Refactor this mess if possible... -->
+
+<script>
+    const {{ $zigWasm }} = new ZigWasm()
+
+    let {{ $zigWasm }}_oldTimestamp = 0;
+
+    function {{ $zigWasm }}_updateWrapper(timestamp) {
+        if ({{ $zigWasm }}.update) {
+            {{ $zigWasm }}.update((timestamp - {{ $zigWasm }}_oldTimestamp) / 1000)
+        }
+        {{ $zigWasm }}_oldTimestamp = timestamp;
+        const id = requestAnimationFrame({{ $zigWasm }}_updateWrapper)
+
+        if ({{ $zigWasm }}.shouldFinish) {
+            cancelAnimationFrame(id)
+            return
+        }
+    }
+
+    WebAssembly.instantiateStreaming(fetch('{{ .Site.BaseURL }}/{{ $wasm }}'), {{ $zigWasm }}.importObject())
+        .then((obj) => {{ $zigWasm }}.init(obj))
+        .then(() => {
+        if ({{ $zigWasm }}.start && {{ $zigWasm }}.update) {
+            const textBytes = textEncoder.encode('#{{ $zigWasm }}')
+            const ptr = {{ $zigWasm }}.alloc(textBytes.length)
+            const buffer = new Uint8Array({{ $zigWasm }}.getMemoryBuffer(), ptr, textBytes.byteLength)
+            buffer.set(textBytes)
+            {{ $zigWasm }}.start(ptr, textBytes.length)
+            requestAnimationFrame({{ $zigWasm }}_updateWrapper)
+        }
+        })
+</script>
