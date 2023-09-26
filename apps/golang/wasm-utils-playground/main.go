@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
-	canvas := wasmutils.GetCanvas("#wasm-utils-playground-canvas")
+	document := wasmutils.GetDocument()
+	canvas := document.GetCanvas("#wasm-utils-playground-canvas")
 	fmt.Println(canvas)
 }

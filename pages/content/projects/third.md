@@ -5,4 +5,6 @@ date: 2023-05-02T21:24:05+02:00
 draft: false
 ---
 
-## Hello world Third
+## Hello world Golang
+
+{{< golang-wasm-canvas wasm-utils-playground-canvas main.wasm >}}

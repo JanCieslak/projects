@@ -6,8 +6,22 @@ type Canvas struct {
 	js.Value
 }
 
-func GetCanvas(canvasName string) Canvas {
+type Document struct {
+	js.Value
+}
+
+func GetDocument() Document {
+	return Document{
+		Value: js.Global().Get("document"),
+	}
+}
+
+func (d Document) querySelector(selector string) js.Value {
+	return d.Call("querySelector", selector)
+}
+
+func (d Document) GetCanvas(canvasName string) Canvas {
 	return Canvas{
-		Value: js.Global().Call("querySelector", canvasName),
+		Value: d.querySelector(canvasName),
 	}
 }
