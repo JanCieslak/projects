@@ -1,9 +1,7 @@
 {{ $canvasId := .Get 0 }}
 {{ $wasmPath := .Get 1 }}
-
-<canvas id="{{ $canvasId }}" width="800" height="800"> </canvas>
-
-<script src="https://cdn.jsdelivr.net/npm/text-encoding@0.7.0/lib/encoding.min.js"></script>
+{{ $seed := now.Unix }}
+{{ $postfix := (delimit (shuffle (split (md5 $seed) "" )) "") | safeJS }}
 
 <script>
     if (!WebAssembly.instantiateStreaming) { // polyfill
@@ -13,24 +11,33 @@
         };
     }
 
-    const go = new Go();
-    let mod, inst;
+    const go_{{- $postfix }} = new Go();
+    go_{{- $postfix }}.argv.push("canvasId:{{ $canvasId }}")
+    {{ range .Params }}
+        go_{{- $postfix }}.argv.push("{{ . }}")
+    {{ end }}
+    let mod_{{- $postfix }}, inst_{{- $postfix }};
     fetch("{{ .Site.BaseURL }}/{{ $wasmPath }}")
         .then((response) => response.arrayBuffer())
-        .then((bytes) => WebAssembly.instantiate(bytes, go.importObject))
+        .then((bytes) => WebAssembly.instantiate(bytes, go_{{- $postfix }}.importObject))
         .then((result) => {
-            mod = result.module;
-            inst = result.instance;
-            document.getElementById("runButton").disabled = false;
+            mod_{{- $postfix }} = result.module;
+            inst_{{- $postfix }} = result.instance;
+            document.getElementById("runButton{{- $postfix }}").disabled = false;
         }).catch((err) => {
         console.error(err);
     });
 
-    async function run() {
+    async function run{{- $postfix }}() {
         console.clear();
-        await go.run(inst);
-        inst = await WebAssembly.instantiate(mod, go.importObject); // reset instance
+        await go_{{- $postfix }}.run(inst_{{- $postfix }});
+        inst_{{- $postfix }} = await WebAssembly.instantiate(mod_{{- $postfix }}, go_{{- $postfix }}.importObject); // reset instance
     }
 </script>
 
-<button onClick="run();" id="runButton" disabled>Run</button>>
+<div class="flex flex-column items-center">
+    <div>
+        <canvas id="{{ $canvasId }}" width="600" height="300" class="bg-gray"> </canvas>
+    </div>
+    <button onClick="run{{- $postfix }}();" id="runButton{{- $postfix }}" disabled>Run</button>
+</div>

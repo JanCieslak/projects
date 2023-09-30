@@ -4,22 +4,18 @@ TODO: ...
 
 ## Projects
 
-### Website
+### Golang + WASM
 
-Website is using a framework called Hugo. TODO: ...
-
-zig version = 0.11.0-dev.2563+35f9c8444
-
-TODO:
-
-- Pass multiple arguments into wasm programs (generic solution - any number of args of any type)
+- Include wasm_exec.js only if golang wasm is used
+- keep wasm files organized
+- prepare a scripts that would build wasm and put it in the right folder (with replace)
+  - not os based (no powershell, bash, etc.)
 
 ### Zig + WASM
 
 Zig + WASM based on Golang approach of interacting with website through WASM
 
-TODO:
-
+- Pass multiple arguments into wasm programs (generic solution - any number of args of any type)
 - Start making physics engine with CanvasRenderer
 - General code refactor (TODOs, Shader, GLRenderer, etc.)
   - WebGL module

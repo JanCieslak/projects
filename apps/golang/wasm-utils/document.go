@@ -2,10 +2,6 @@ package wasmutils
 
 import "syscall/js"
 
-type Canvas struct {
-	js.Value
-}
-
 type Document struct {
 	js.Value
 }
@@ -20,8 +16,8 @@ func (d Document) querySelector(selector string) js.Value {
 	return d.Call("querySelector", selector)
 }
 
-func (d Document) GetCanvas(canvasName string) Canvas {
+func (d Document) GetCanvas(canvasId string) Canvas {
 	return Canvas{
-		Value: d.querySelector(canvasName),
+		Value: d.querySelector("#" + canvasId),
 	}
 }

@@ -7,4 +7,6 @@ draft: false
 
 ## Hello world Golang
 
-{{< golang-wasm-canvas wasm-utils-playground-canvas main.wasm >}}
+{{< golang-wasm-canvas canvas main.wasm >}}
+
+{{< golang-wasm-canvas canvas2 main.wasm >}}
