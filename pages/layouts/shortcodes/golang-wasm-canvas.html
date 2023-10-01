@@ -1,7 +1,8 @@
-{{ $canvasId := .Get 0 }}
-{{ $wasmPath := .Get 1 }}
+{{ $wasmPath := .Get 0 }}
 {{ $seed := now.Unix }}
 {{ $postfix := (delimit (shuffle (split (md5 $seed) "" )) "") | safeJS }}
+{{ $id := (delimit (shuffle (split (md5 $seed) "" )) "") | safeJS }}
+{{ $canvasId := printf "canvas-%s" $id }}
 
 <script>
     if (!WebAssembly.instantiateStreaming) { // polyfill
@@ -17,7 +18,7 @@
         go_{{- $postfix }}.argv.push("{{ . }}")
     {{ end }}
     let mod_{{- $postfix }}, inst_{{- $postfix }};
-    fetch("{{ .Site.BaseURL }}/{{ $wasmPath }}")
+    fetch("{{ .Site.BaseURL }}/wasm/{{ $wasmPath }}.wasm")
         .then((response) => response.arrayBuffer())
         .then((bytes) => WebAssembly.instantiate(bytes, go_{{- $postfix }}.importObject))
         .then((result) => {

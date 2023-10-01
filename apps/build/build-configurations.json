@@ -1,0 +1,8 @@
+{
+  "go": [
+    {
+      "path": "golang/wasm-utils-playground",
+      "name": "wasm-utils-playground"
+    }
+  ]
+}
