@@ -13,6 +13,7 @@
     }
 
     const go_{{- $postfix }} = new Go();
+    go_{{- $postfix }}.argv.push("postfix:{{- $postfix }}")
     go_{{- $postfix }}.argv.push("canvasId:{{ $canvasId }}")
     {{ range .Params }}
         go_{{- $postfix }}.argv.push("{{ . }}")
@@ -41,4 +42,5 @@
         <canvas id="{{ $canvasId }}" width="600" height="300" class="bg-gray"> </canvas>
     </div>
     <button onClick="run{{- $postfix }}();" id="runButton{{- $postfix }}" disabled>Run</button>
+    <button onClick="play{{- $postfix }}();" id="playButton{{- $postfix }}" >Play</button>
 </div>
